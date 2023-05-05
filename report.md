@@ -29,7 +29,8 @@ graph LR
     counter -->|register| discovery
     carts -->|register| discovery
 ```
-我的系统总共包括products，counter，carts，discovery，gateway这几个服务，它们分别负责以下功能：
+[^(借鉴了老师的视频)]:https://www.bilibili.com/video/BV1Ti4y1m7Ar/?spm_id_from=333.999.0.0s 
+我的系统总共包括products，counter，carts，discovery，gateway这几个服务[^(借鉴了老师的视频)]，它们分别负责以下功能：
 
 - products：提供POS系统中的产品管理服务，包括查询，添加，修改，删除等操作。
 - counter：提供POS系统中的结帐服务，包括计算总价，生成订单，支付等操作。
