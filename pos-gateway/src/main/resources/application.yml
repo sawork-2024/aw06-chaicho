@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: pos-carts-route
+          uri: lb://pos-carts
+          predicates:
+            - Path=/carts/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: pos-carts-cb
+                fallbackUri: forward:/fallback/nothing
+        - id: pos-products-route
+          uri: lb://pos-products
+          predicates:
+            - Path=/products/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: pos-products-cb
+                fallbackUri: forward:/fallback/nothing
+        - id: pos-counter-route
+          uri: lb://pos-counter
+          predicates:
+            - Path=/counter/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: pos-counter-cb
+                fallbackUri: forward:/fallback/nothing
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+resilience4j.circuitbreaker:
+  instances:
+    pos-carts-cb:
+      slidingWindowSize: 10
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10s
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+    pos-products-cb:
+      slidingWindowSize: 10
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10s
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+    pos-counter-cb:
+      slidingWindowSize: 10
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10s
