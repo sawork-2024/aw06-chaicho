@@ -1,45 +1,44 @@
 package com.micropos.cart.model;
 
+import com.micropos.dto.CartItemDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
-import java.io.Serializable;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "items")
 @Accessors(fluent = true, chain = true)
-public class Item implements Serializable {
+@Setter
+@Getter
+public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
-    private Integer id;
+    public Long id;
 
-    @Column(name="cart_id")
-    @Getter
-    @Setter
-    private Integer cartId;
-
-    @Column(name = "product_id")
-    @Getter
-    @Setter
-    private String productId;
-
-    @Column(name = "product_name")
-    @Getter
-    @Setter
-    private String productName;
-
-    @Column(name = "unit_price")
-    @Getter
-    @Setter
-    private double unitPrice;
+    @Column(name="product_id")
+    public String productId;
 
     @Column(name = "quantity")
     @Getter
     @Setter
-    private int quantity;
+    public int quantity;
+
+    public Item() {
+        this.productId = "";
+        this.quantity = 0;
+    }
+    public Item(String productId, int i) {
+        this.productId = productId;
+        this.quantity = i;
+    }
+
+
+    // Getters and setters
 }

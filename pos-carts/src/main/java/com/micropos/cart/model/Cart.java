@@ -2,36 +2,37 @@ package com.micropos.cart.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "carts")
-@Accessors(fluent = true, chain = true)
-public class Cart implements Serializable {
-
+@Getter
+public class Cart {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cart_id", referencedColumnName = "id")
+    public List<Item> items = new ArrayList<>();
+
     @Getter
     @Setter
-    private Integer id;
+    @Column(name = "total")
+    public Double total = 0.0;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "items", joinColumns = @JoinColumn(name = "cart_id"))
-    @Setter
-    @Getter
-    private List<Item> items = new ArrayList<>();
-
-    public boolean addItem(Item item) {
-        return items.add(item);
-    }
-
-    public boolean removeItem(Item item) {
-        return items.remove(item);
+    public void addItem(Item item) {
+        items.stream()
+                .filter(it -> it.productId.equals(item.productId))
+                .findAny()
+                .ifPresentOrElse(
+                        it -> it.quantity += 1,
+                        () -> {
+                            items.add(item);
+                        }
+                );
     }
 
 }

@@ -43,7 +43,11 @@ graph LR
 ## 服务间通信
 因为products、carts之间需要经常的通信，我选择RestTemplate来进行服务间的通信，RestTemplate简化了与http服务的通信方式，统一了RESTful的标准，封装了http链接，我只需要传入url及返回值类型即可。
 
-我还用了@LoadBalanced注解，它是一个标记注解，表示被注解的RestTemplate应该使用RibbonLoadBalancerClient来与服务交互，这样可以使用服务名作为URL的逻辑标识符; 它可以让RestTemplate自动从Eureka服务器获取服务实例的信息，并根据负载均衡策略选择一个实例来调用。
+我还用了@LoadBalanced注解，它是一个标记注解表示被注解的RestTemplate可以使用lb+服务名作为URL的逻辑标识符; 它可以让RestTemplate自动从Eureka服务器获取服务实例的信息，并根据负载均衡策略选择一个实例来调用。
+
+```java
+Double total = restTemplate.postForObject("lb://pos-counter/api/counter/checkout", request, Double.class);
+```
 
 ## 断路器使用
 

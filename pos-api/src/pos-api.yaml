@@ -7,44 +7,15 @@ info:
 servers:
   - url: http://localhost:8080/api
 paths:
-  /carts:
-    get:
-      summary: List all carts
-      operationId: listCarts
-      tags:
-        - carts
-      responses:
-        '200':
-          description: An array of carts
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Carts"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+  /cart:
     post:
       tags:
-        - carts
+        - cart
       operationId: createCart
       summary: Create a new cart
-      requestBody:
-        description: An empty cart
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Cart'
-        required: true
       responses:
         201:
           description: The cart was successfully added.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Cart'
         400:
           description: Bad request.
           content:
@@ -63,88 +34,77 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /carts/{cartId}:
-    get:
-      summary: Info for a specific cart
-      operationId: showCartById
-      tags:
-        - cart
-      parameters:
-        - name: cartId
-          in: path
-          required: true
-          description: The id of the cart to retrieve
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: Expected response to a valid request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Cart"
+  /cart/checkout:
     post:
-      summary: Add an item to cart
-      operationId: addItemToCart
+      summary: checkout a cart
+      operationId: checkout
       tags:
         - cart
-      parameters:
-        - name: cartId
-          in: path
-          required: true
-          description: The id of the cart to retrieve
-          schema:
-            type: integer
-            format: int32
-      requestBody:
-        description: The details of the item.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CartItem'
-        required: true
       responses:
         '200':
           description: Expected response to a valid request
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Cart"
-        default:
-          description: unexpected error
+                schema:
+                  $ref: "#/components/schemas/CartItems"
+
+        400:
+          description: Bad request.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-  /carts/{cartId}/total:
-    get:
-      summary: Total for a specific cart
-      operationId: showCartTotal
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Cart not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cart/items/{productId}:
+    put:
+      summary: Add an product to the cart
+      operationId: addProductToCart
       tags:
         - cart
       parameters:
-        - name: cartId
+        - name: productId
           in: path
           required: true
-          description: The id of the cart to get total
+          description: The id of the product to add to the cart
           schema:
-            type: integer
-            format: int32
+            type: string
       responses:
         '200':
-          description: Expected response to a valid request
+          description: Item successfully added to the cart
           content:
             application/json:
               schema:
-                type: number
-                format: double
-        default:
-          description: unexpected error
+                $ref: "#/components/schemas/CartItems"
+        400:
+          description: Bad request.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Product not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /products:
     get:
       summary: List all products
@@ -167,9 +127,9 @@ paths:
   /products/{productId}:
     get:
       summary: Info for a specific product
-      operationId: showProductById
+      operationId: getProduct
       tags:
-        - product
+        - products
       parameters:
         - name: productId
           in: path
@@ -192,8 +152,8 @@ paths:
                 $ref: "#/components/schemas/Error"
   /counter/checkout:
     post:
-      summary: checkout a cart
-      operationId: checkout
+      summary: checkout an Order
+      operationId: checkoutOrder
       tags:
         - counter
       requestBody:
@@ -219,21 +179,18 @@ paths:
                 $ref: "#/components/schemas/Error"
 components:
   schemas:
-    Carts:
-      type: array
-      items:
-        $ref: "#/components/schema/Cart"
+    CartItems:
+        type: array
+        items:
+            $ref: "#/components/schemas/CartItem"
     CartItem:
       type: object
       properties:
-        id:
+        productId:
+          type: string
+        quantity:
           type: integer
           format: int32
-        amount:
-          type: integer
-          format: int32
-        product:
-          $ref: "#/components/schema/Product"
     Cart:
       type: object
       properties:
@@ -243,7 +200,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schema/CartItem"
+            $ref: "#/components/schemas/CartItem"
     Product:
       type: object
       required:
@@ -275,6 +232,7 @@ components:
           format: int32
         message:
           type: string
+
   responses:
     NullResponse:
       description: Null response

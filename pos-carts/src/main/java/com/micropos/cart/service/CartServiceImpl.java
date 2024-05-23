@@ -23,18 +23,16 @@ import java.util.Optional;
 @Service
 public class CartServiceImpl implements CartService {
 
-    private CartRepository cartRepository;
-
-    private final String COUNTER_URL = "http://POS-COUNTER/counter/";
-
     private CartMapper cartMapper;
 
     @Autowired
     public void setCartMapper(CartMapper cartMapper) {
         this.cartMapper = cartMapper;
     }
+    private CartRepository cartRepository;
 
-    @LoadBalanced
+    private Cart cart = null;
+
     private RestTemplate restTemplate;
 
     @Autowired
@@ -48,51 +46,37 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Double checkout(Cart cart) {
-        CartDto cartDto = cartMapper.toCartDto(cart);
-        ObjectMapper mapper = new ObjectMapper();
+    public void initCart() {
+        if (cart == null) {
+            cart = new Cart();
+            cartRepository.save(cart);
+        }
+    }
+    @Override
+    public Cart addProductToCart(String productId) {
+        if (cart == null) {
+            initCart();
+        }
+        Item item = new Item(productId, 1);
+        item.productId = productId;
+        cart.addItem(item);
+        cartRepository.save(cart);
+        return cart;
+    }
 
+    @Override
+    public Cart checkout() {
+        if (cart == null) {
+            initCart();
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = null;
-        try {
-            request = new HttpEntity<>(mapper.writeValueAsString(cartDto), headers);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        Double total = restTemplate.postForObject(COUNTER_URL+ "/checkout", request, Double.class);
-        return total;
-    }
-
-    public Integer test() {
-
-        Integer test = restTemplate.getForObject(COUNTER_URL + "/test", Integer.class);
-        return test;
-    }
-
-    @Override
-    public Double checkout(Integer cartId) {
-        Optional<Cart> cart = this.cartRepository.findById(cartId);
-
-        if (cart.isEmpty()) return Double.valueOf(-1);
-
-        return this.checkout(cart.get());
-    }
-
-    @Override
-    public Cart add(Cart cart, Item item) {
-        if (cart.addItem(item))
-            return cartRepository.save(cart);
-        return null;
-    }
-
-    @Override
-    public List<Cart> getAllCarts() {
-        return Streamable.of(cartRepository.findAll()).toList();
-    }
-
-    @Override
-    public Optional<Cart> getCart(Integer cartId) {
-        return cartRepository.findById(cartId);
+        CartDto cartDto = new CartDto();
+        cartDto.setItems(cartMapper.toItemsDto(cart.getItems()));
+        HttpEntity<CartDto> request = new HttpEntity<>(cartDto, headers);
+        Double total = restTemplate.postForObject("lb://pos-counter/api/counter/checkout", request, Double.class);
+        cart.setTotal(total);
+        cartRepository.save(cart);
+        return cart;
     }
 }

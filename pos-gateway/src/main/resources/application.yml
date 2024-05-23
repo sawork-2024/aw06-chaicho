@@ -1,36 +1,21 @@
 spring:
   application:
-    name: gateway-service
+    name: pos-gateway
   cloud:
     gateway:
       routes:
         - id: pos-carts-route
           uri: lb://pos-carts
           predicates:
-            - Path=/carts/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: pos-carts-cb
-                fallbackUri: forward:/fallback/nothing
+            - Path=/api/cart/**
         - id: pos-products-route
           uri: lb://pos-products
           predicates:
-            - Path=/products/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: pos-products-cb
-                fallbackUri: forward:/fallback/nothing
+            - Path=/api/products/**
         - id: pos-counter-route
           uri: lb://pos-counter
           predicates:
-            - Path=/counter/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: pos-counter-cb
-                fallbackUri: forward:/fallback/nothing
+            - Path=/api/counter/**
 
 eureka:
   client:

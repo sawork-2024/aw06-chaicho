@@ -8,15 +8,15 @@ import java.util.Optional;
 
 public interface CartService {
 
-    Double checkout(Cart cart);
+//    Cart add(Cart cart, Item item);
+//
+//    List<Cart> getAllCarts();
+//
+//    Optional<Cart> getCart(Integer cartId);
+//
+//    Integer test();
+    public void initCart();
+    public Cart addProductToCart(String productId);
 
-    Double checkout(Integer cartId);
-
-    Cart add(Cart cart, Item item);
-
-    List<Cart> getAllCarts();
-
-    Optional<Cart> getCart(Integer cartId);
-
-    Integer test();
+    public Cart checkout();
 }
