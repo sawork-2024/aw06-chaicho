@@ -61,6 +61,13 @@ public class CartServiceImpl implements CartService {
         item.productId = productId;
         cart.addItem(item);
         cartRepository.save(cart);
+
+//         Sleep for 0.5 second to simulate a slow service
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return cart;
     }
 
@@ -77,6 +84,8 @@ public class CartServiceImpl implements CartService {
         Double total = restTemplate.postForObject("lb://pos-counter/api/counter/checkout", request, Double.class);
         cart.setTotal(total);
         cartRepository.save(cart);
-        return cart;
+        Cart ret = cart;
+        cart = null;
+        return ret;
     }
 }

@@ -23,6 +23,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProduct(String id) {
+        // Sleep for 0.5 second to simulate a slow service
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return productRepository.findProduct(id);
     }
 

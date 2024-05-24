@@ -52,3 +52,12 @@ Double total = restTemplate.postForObject("lb://pos-counter/api/counter/checkout
 ## 断路器使用
 
 我在application.yml文件中定义了三个路由，分别对应三个不同的服务：pos-carts，pos-products和pos-counter。每个路由都有一个CircuitBreaker过滤器，用来指定断路器的名称和降级的URI。然后我在resilience4j.circuitbreaker.instances下配置了每个断路器的参数，例如滑动窗口大小，失败率阈值，开启状态的等待时间等。这样，当我通过gateway调用这些服务时，如果某个服务出现故障或超时，断路器就会打开，并将请求转发到fallbackUri指定的地址，从而实现了服务的容错和降级。这里的fallbackUri是我在gateway实现的controller里处理的。
+
+## 水平扩展效果验证
+为了更好的查看效果，我在每个函数中加入了一个sleep函数，模拟了服务的延迟，然后将各个服务启动一个实例，然后通过gatling进行测试，测试结果如下：
+![Screenshot from 2024-05-24 11-32-32.png](..%2F..%2FPictures%2FScreenshot%20from%202024-05-24%2011-32-32.png)
+
+接着我利用docker启动了两个products服务实例(对应的docker-compose.yml在pos-products目录下)，然后通过gatling进行同样的测试，测试结果如下：
+![Screenshot from 2024-05-24 11-39-57.png](..%2F..%2FPictures%2FScreenshot%20from%202024-05-24%2011-39-57.png)
+
+可以看到，当我将products服务的实例数量增加到两个时，响应时间都<800ms,这说明对单个微服务进行水平扩展可以有效提高系统的性能。

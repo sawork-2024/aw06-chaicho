@@ -1,0 +1,16 @@
+version: '3'
+services:
+  pos-products-app1:
+    image: pos-products-app
+    build:
+      context: .
+    network_mode: host
+    environment:
+      - SERVER_PORT=8091
+  pos-products-app2:
+    image: pos-products-app
+    build:
+      context: .
+    network_mode: host
+    environment:
+      - SERVER_PORT=8092

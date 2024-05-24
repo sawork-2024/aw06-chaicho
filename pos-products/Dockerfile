@@ -8,7 +8,7 @@ WORKDIR /app
 COPY target/pos-products-0.0.1.jar /app/pos-products.jar
 
 # Make port 8080 available to the world outside this container
-EXPOSE 8080
+EXPOSE 8091
 
 # Run the JAR file
 ENTRYPOINT ["java", "-jar", "/app/pos-products.jar"]
