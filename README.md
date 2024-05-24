@@ -55,9 +55,9 @@ Double total = restTemplate.postForObject("lb://pos-counter/api/counter/checkout
 
 ## 水平扩展效果验证
 为了更好的查看效果，我在每个函数中加入了一个sleep函数，模拟了服务的延迟，然后将各个服务启动一个实例，然后通过gatling进行测试，测试结果如下：
-![Screenshot from 2024-05-24 11-32-32.png](..%2F..%2FPictures%2FScreenshot%20from%202024-05-24%2011-32-32.png)
+![Screenshot from 2024-05-24 11-32-32.png](./Screenshot from 2024-05-24 11-32-32.png)
 
 接着我利用docker启动了两个products服务实例(对应的docker-compose.yml在pos-products目录下)，然后通过gatling进行同样的测试，测试结果如下：
-![Screenshot from 2024-05-24 11-39-57.png](..%2F..%2FPictures%2FScreenshot%20from%202024-05-24%2011-39-57.png)
+![Screenshot from 2024-05-24 11-39-57.png](./Screenshot from 2024-05-24 11-39-57.png)
 
 可以看到，当我将products服务的实例数量增加到两个时，响应时间都<800ms,这说明对单个微服务进行水平扩展可以有效提高系统的性能。
